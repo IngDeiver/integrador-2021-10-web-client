@@ -15,8 +15,10 @@ const Files = ({ showMessage }) => {
     const [currentDir, setCurrentDir] = useState([])
     const [loadingFiles, setLoadingFiles] = useState(true)
     const context = useContext(AppContext)
+    const user = context[3];
     const reloadFiles = context[8]
     const setReloadFiles = context[9]
+    
 
     const handleSort = async  (typeSort) => {
       const dir = [...currentDir[currentDir.length - 1].children]
@@ -36,9 +38,10 @@ const Files = ({ showMessage }) => {
 
     const listFiles = () => {
       getFiles()
-      .then((res) => {
+      .then(async (res) => {
         setLoadingFiles(false);
-        const dirs = makeTree("deiver-guerra-carrascal", res.data)
+        const username = await user.username.replace(/\s/g, '-').toLowerCase()
+        const dirs = makeTree(username, res.data)
         const current = [...currentDir]
         current.push(dirs)
         setCurrentDir(current)
