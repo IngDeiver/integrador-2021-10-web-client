@@ -35,10 +35,8 @@ const File = ({
  
   useEffect(() => {
     // Remove files from lis to remove
-    console.log("File<----");
     if (!selectingFilesToRemove) {
-      console.log("NOO");
-      SetFilesToRemove({ areVideos: false, data: [] });
+      SetFilesToRemove({ type: '', data: [] });
       const checkboxes = document.getElementsByClassName("form-check-input");
       for (let i = 0; i < checkboxes.length; i++) {
         checkboxes[i].checked = false;
@@ -172,7 +170,7 @@ const File = ({
     if (checked) {
       currentFilesToremove.push(file._id);
       SetFilesToRemove({
-        areVideos: file.type === 'video',
+        type: file.type,
         data: currentFilesToremove,
       });
       setSelectingFilesToRemove(true);
@@ -180,7 +178,7 @@ const File = ({
       // Remove file from remove list
       currentFilesToremove.splice(currentFilesToremove.indexOf(file), 1);
       SetFilesToRemove({
-        areVideos: file.type === 'video',
+        type: file.type,
         data: currentFilesToremove,
       });
     }
@@ -193,14 +191,11 @@ const File = ({
   return (
     <div className="container-fluid">
 
-      { files.length === 0 && dirs.length !== 0 && 
+      { dirs.children && 
         <div className="my-2">
           <button onClick={backDirectory} disabled = {dirs.dir === 'Home'}  className =" btn btn-default">
-            <i  style={ arrowStyle } class="fas fa-arrow-circle-left"></i>
+            <i  style={ arrowStyle } className="fas fa-arrow-circle-left"></i>
           </button>
-        {/* <button onClick={nextDirectory} disabled = {currentDir === dirs.length } className =" btn btn-default">
-          <i style={ arrowStyle } class="fas fa-arrow-circle-right"></i>
-        </button> */}
         | { dirs.dir}
         </div>
       }
@@ -242,7 +237,7 @@ const File = ({
                     />
                   )}
                   <label className="form-check-label">
-                  <i class="far fa-file-alt mr-2"></i>
+                  <i className="far fa-file-alt mr-2"></i>
                     {file.name.length > 25
                       ? file.name.substring(0, 25) + "..."
                       : file.name}
@@ -301,7 +296,7 @@ const File = ({
             )) )
           }
 
-          { dirs.children?.length != 0 && (
+          { dirs.children?.length !== 0 && (
             dirs.children?.map((dir, key) => (
               <div key = {key} className="row mx-3 file container">
                 <div
@@ -316,13 +311,13 @@ const File = ({
                     />
                   )}
                   <label className="form-check-label">
-                    {dir.children.length != 0 && <i class="far fa-folder mr-2"></i> }
+                    {dir.children.length != 0 && <i className="far fa-folder mr-2"></i> }
 
                     {dir.children.length === 0 && (
                       <>
-                        {dir.file.type === 'photo' && <i class="far fa-file-image mr-2"></i>}
-                        {dir.file.type === 'video' && <i class="far fa-file-video mr-2"></i>}
-                        {dir.file.type === 'file' && <i class="far fa-file-alt mr-2"></i>}
+                        {dir.file.type === 'photo' && <i className="far fa-file-image mr-2"></i>}
+                        {dir.file.type === 'video' && <i className="far fa-file-video mr-2"></i>}
+                        {dir.file.type === 'file' && <i className="far fa-file-alt mr-2"></i>}
                       </>
                     )}
 
@@ -392,7 +387,10 @@ const File = ({
           <Spinner />
         </div>
       )}
-      {!loading && files.length === 0 && dirs.length === 0 && (
+      {!loading && files.length == 0 && dirs.children?.length == 0 && (
+        <p className="text-center text-muted my-5">Start to share files!</p>
+      )}
+      {!loading && files.length == 0 && !dirs.children && (
         <p className="text-center text-muted my-5">Start to share files!</p>
       )}
     </div>

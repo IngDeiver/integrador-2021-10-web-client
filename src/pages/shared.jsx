@@ -43,7 +43,6 @@ import { AppContext } from '../context/AppProvider';
   const listSharedFiles = () => {
     getSharedFiles()
     .then((res) => {
-      console.log(res.data)
       setLoadingSharedFiles(false);
       setSharedFiles(res.data)
       setReloadSharedFiles(false)

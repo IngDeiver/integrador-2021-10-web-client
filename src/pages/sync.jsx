@@ -9,7 +9,7 @@ import WithAppLayout from '../layouts/appLayout'
 const Sync = () => {
 
     useEffect(() => {
-        console.log("isElectron.", isElectron());
+        
     });
 
     return (
