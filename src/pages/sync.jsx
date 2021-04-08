@@ -13,35 +13,39 @@ const Sync = ({ showMessage }) => {
   const user = context[3];
   
   useEffect(() => {
-    console.log("Render!");
+    console.log("Render Sync");
 
-
-  ipcRenderer.on("sync-success", (event, path) => {
-    console.log("sync-success path: ", path); // prints "pong"
+  // set path when client sync a directory
+  ipcRenderer.on("sync-success-dir", (event, path) => {
+    console.log("sync-success path: ", path);
     if (path) {
           setPath(path)
           showMessage("Synchronized directory");
     }
   });
 
+  // clear path when client dessync a directory
   ipcRenderer.on("desynchronize-success", (event, arg) => {
     setPath('');
     showMessage("Directory out of sync");
   });
 
+
+  // listen if exist a path synced
   ipcRenderer.on("path-syncronized", (event, path) => {
       const pathSyncronized = path ? path:''
       setPath(pathSyncronized);
   });
 
+    // checkl if exist a dir synced
     if (isElectron()) {
         ipcRenderer.send("get-path-syncronized", null);
     }
 
-    return (() => {
-      ipcRenderer.removeAllListeners()
-    })
-  },[]);
+    // return () => {
+    //   ipcRenderer.removeAllListeners()
+    // }
+  });
 
 
   const sync = () => {
@@ -55,18 +59,22 @@ const Sync = ({ showMessage }) => {
     <>
       {isElectron() ? (
         <div className="d-flex flex-column justify-content-center align-items-center p-5">
-          <h1 className="text-center text-muted my-2">
-            {path === "" ? "Select a folder to sync" : `Syncing: ${path}`}
-          </h1>
+          {path !== '' && <h1 className="text-center text-muted my-2">Your files are in sync</h1>}
+          <h2 className="text-center text-muted my-2">
+            {path === "" ? "Select a folder to sync" : `Folder: ${path}`}
+          </h2>
           {path === "" ? (
             <button onClick={sync} className="btn btn-info">
               <i className="fas fa-sync"></i> Browser
             </button>
           ) : (
-            <button onClick={desynchronize} className="btn btn-danger">
+            <div className ="d-flex flex-column justify-content-cener">
+              <img width="50%" src ="/images/spinning-arrows.gif" className="ml-5 mt-2 mb-4"/>
+              <button onClick={desynchronize} className="btn btn-danger">
               {" "}
               Desynchronize
             </button>
+            </div>
           )}
         </div>
       ) : (

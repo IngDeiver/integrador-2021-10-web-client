@@ -127,28 +127,37 @@ function App({ showMessage }) {
   const [loadingSesion, setLoadingSesion] = useState(true);
 
   useEffect(() => {
-
+  console.log("Render App");
     // ipc ons
     ipcRenderer.on("sync-error", (event, message) => {
+      console.error("sync-error: " + message);
       showMessage(message, "error");
     });
 
     ipcRenderer.on("sync-change", (event, message) => {
+      console.log("Se llamo sync-change en react!");
       showMessage(message);
     });
 
     ipcRenderer.on("sync-add-file", (event, file) => {
-      console.log("Se llamo!");
+      console.log("Se llamo sync-add-file en react!");
       saveFileWithSync(file)
       .then((res) => {
-        if(!res.data?.error?.message?.includes('E11000 duplicate key error')){
+         // if exist   
+        if(res.data?.error?.message?.includes('E11000 duplicate key error')){
+          showMessage( `The file ${file.name} exist and should fixed sync when exist`, 'warning')
+        }else{// if the file not exist
           showMessage( `The file ${file.name} was added`)
         }
       })
       .catch((err) => {
-        console.log(err.message);
+        console.error("Eror al guardar archivo: ", err.message);
         showMessage('An error occurred while syncing', 'error')
       })
+    });
+
+    ipcRenderer.on("sync-remove-file", (event, file) => {
+      console.log("Se llamo sync-remove-file en react!");
     });
 
     // Get sesion and set context
@@ -172,9 +181,9 @@ function App({ showMessage }) {
       })
       .catch(() => showMessage("Invalid sesión", "error"));
 
-    return () => {
-      ipcRenderer.removeAllListeners();
-    };
+    // return () => {
+    //   ipcRenderer.removeAllListeners();
+    // };
   }, []);
 
   return (
