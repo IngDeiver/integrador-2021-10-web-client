@@ -38,9 +38,9 @@ const Files = ({ showMessage }) => {
 
     const listFiles = () => {
       getFiles()
-      .then(async (res) => {
+      .then( (res) => {
         setLoadingFiles(false);
-        const username = await user.username.replace(/\s/g, '-').toLowerCase()
+        const username =  user.username
         const dirs = makeTree(username, res.data)
         const current = [...currentDir]
         current.push(dirs)

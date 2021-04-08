@@ -16,6 +16,7 @@
     "dom": "^0.0.3",
     "electron-is-dev": "^2.0.0",
     "electron-squirrel-startup": "^1.0.0",
+    "electron-store": "^7.0.3",
     "express": "^4.17.1",
     "is-electron": "^2.2.0",
     "jquery": "^3.5.1",
@@ -32,6 +33,7 @@
     "react-scripts": "^4.0.2",
     "react-toastify": "^7.0.3",
     "styled-components": "^5.2.1",
+    "sync-files-cipher": "^0.2.0",
     "web-vitals": "^1.1.0"
   },
   "scripts": {
@@ -76,8 +78,7 @@
   },
   "config": {
     "forge": {
-      "packagerConfig": {
-      },
+      "packagerConfig": {},
       "makers": [
         {
           "name": "@electron-forge/maker-squirrel",
