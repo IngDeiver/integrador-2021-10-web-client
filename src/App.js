@@ -25,6 +25,7 @@ import Photos from "./pages/photos";
 import Videos from "./pages/videos";
 import Shared from "./pages/shared";
 import Syncronization from "./pages/sync";
+import { saveFileWithSync } from './services/fileApiService'
 
 // Auth utils
 import { getLocalSesion } from "./util/auth";
@@ -134,6 +135,20 @@ function App({ showMessage }) {
 
     ipcRenderer.on("sync-change", (event, message) => {
       showMessage(message);
+    });
+
+    ipcRenderer.on("sync-add-file", (event, file) => {
+      console.log("Se llamo!");
+      saveFileWithSync(file)
+      .then((res) => {
+        if(!res.data?.error?.message?.includes('E11000 duplicate key error')){
+          showMessage( `The file ${file.name} was added`)
+        }
+      })
+      .catch((err) => {
+        console.log(err.message);
+        showMessage('An error occurred while syncing', 'error')
+      })
     });
 
     // Get sesion and set context
