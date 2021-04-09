@@ -142,9 +142,11 @@ const Header = ({ noIsAdminSection = true, showMessage }) => {
               .then((res) => {
                 if(res.data?.error?.message?.includes('E11000 duplicate key error')){
                   showMessage( `The file exist`, 'warning')
+                  setUploading(false);
+                  setReloadFiles(true);
+                  setAllowCancelUpload(false);
                 }else {
                   setUploading(false);
-                  console.log();
                   showMessage(`${type} uploaded!`);
                   setReloadFiles(true);
                   setAllowCancelUpload(false);
