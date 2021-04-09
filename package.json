@@ -101,11 +101,6 @@
     "appId": "upb.edu.co.streamsforlab",
     "productName": "Streams for lab",
     "copyright": "Copyright © 2021 Deiver Guerra Carrascal",
-    "files": [
-      "**/*",
-      "build/icons/icon.*",
-      "build/icons/**"
-    ],
     "win": {
       "target": "msi",
       "icon": "build/icons/win/icon.ico"

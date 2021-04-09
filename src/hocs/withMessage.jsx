@@ -5,7 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 const WithMessage = (Component) => {
   return class extends react.Component {
     showMessage = (message, type = "info") => {
-      toast(message, {type});
+      toast(message, {type });
     };
 
     render() {
@@ -13,8 +13,9 @@ const WithMessage = (Component) => {
         <>
           <Component showMessage={this.showMessage} {...this.props}/>
           <ToastContainer
+            closeOnClick
             position="bottom-right"
-            autoClose={5000}
+            autoClose={700}
             hideProgressBar={true}
             newestOnTop={false}
             closeOnClick

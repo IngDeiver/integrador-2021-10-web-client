@@ -12,7 +12,10 @@ import { getStorageUsed } from "../services/fileApiService";
 import { AppContext } from "../context/AppProvider";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
+import isElectron from "is-electron";
+
 const GB = 1000000000; //numero de bytes que tiene 1GB
+const { ipcRenderer } = window;
 
 const Header = ({ noIsAdminSection = true, showMessage }) => {
   const [uploading, setUploading] = useState(false);
@@ -27,6 +30,7 @@ const Header = ({ noIsAdminSection = true, showMessage }) => {
   const location = useLocation();
 
   useEffect(() => {}, [location]);
+
   const onUploadProgress = (progressEvent) => {
     const percentCompleted = Math.round(
       (progressEvent.loaded * 100) / progressEvent.total
@@ -235,7 +239,12 @@ const Header = ({ noIsAdminSection = true, showMessage }) => {
               </li>
             )}
             <li className="nav-item">
-              <button className="btn btn-outline-secondary" onClick={logout}>
+              <button className="btn btn-outline-secondary" onClick={() => {
+                logout()
+                if(isElectron()){
+                  ipcRenderer.send("desynchronize", null);
+                }
+              }}>
                 <i className="fas fa-sign-out-alt"></i> Logout
               </button>
             </li>

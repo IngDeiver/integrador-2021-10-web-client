@@ -142,21 +142,25 @@ function App({ showMessage }) {
       showMessage(message);
     });
 
-    ipcRenderer.on("sync-add-file", (event, file) => {
-      console.log("Se llamo sync-add-file en react!");
-      saveFileWithSync(file)
-      .then((res) => {
-         // if exist   
-        if(res.data?.error?.message?.includes('E11000 duplicate key error')){
-          showMessage( `The file ${file.name} exist and should fixed sync when exist`, 'warning')
-        }else{// if the file not exist
-          showMessage( `The file ${file.name} was added`)
-        }
-      })
-      .catch((err) => {
-        console.error("Eror al guardar archivo: ", err.message);
-        showMessage('An error occurred while syncing', 'error')
-      })
+    ipcRenderer.on("sync-add-file", async (event, file) => {
+      if(await getLocalSesion()){
+        saveFileWithSync(file)
+        .then((res) => {
+           // if exist   
+          if(res.data?.error?.message?.includes('E11000 duplicate key error')){
+            showMessage( `The file ${file.name} exist and should fixed sync when exist`, 'warning')
+          }else{// if the file not exist
+            showMessage( `The file ${file.name} was added`)
+          }
+        })
+        .catch((err) => {
+          console.error("Eror al guardar archivo: ", err.message);
+          showMessage('An error occurred while syncing', 'error')
+        })
+      }else{
+        console.log("hp monda!");
+      }
+     
     });
 
     ipcRenderer.on("sync-remove-file", (event, file) => {

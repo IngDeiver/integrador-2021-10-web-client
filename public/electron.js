@@ -16,7 +16,7 @@ var tray = null;
 // --- app ---
 app.whenReady().then(async () => {
   await createWindow();
-  creatCloseEvent();
+  await creatCloseEvent();
   checkIfPathToSynExist();
 });
 
