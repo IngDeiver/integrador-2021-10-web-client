@@ -29,6 +29,7 @@ import { saveFileWithSync } from './services/fileApiService'
 
 // Auth utils
 import { getLocalSesion } from "./util/auth";
+import isElectron from "is-electron";
 
 // SHow when sesion is loading
 const Loading = () => <div className="fixed-top">Loading...</div>;
@@ -127,8 +128,10 @@ function App({ showMessage }) {
   const [loadingSesion, setLoadingSesion] = useState(true);
 
   useEffect(() => {
-  console.log("Render App");
-    // ipc ons
+    console.log("Render App");
+    
+    if(isElectron()){
+      // ipc ons
     ipcRenderer.on("sync-error", (event, message) => {
       console.error("sync-error: " + message);
       showMessage(message, "error");
@@ -159,6 +162,7 @@ function App({ showMessage }) {
     ipcRenderer.on("sync-remove-file", (event, file) => {
       console.log("Se llamo sync-remove-file en react!");
     });
+    }
 
     // Get sesion and set context
     getLocalSesion()

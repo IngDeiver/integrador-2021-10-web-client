@@ -1,8 +1,5 @@
 const path = require("path");
-const express = require("express");
-const server = express();
-const { app, BrowserWindow, ipcMain, dialog } = require("electron");
-const isDev = require("electron-is-dev");
+const { app, BrowserWindow, ipcMain, dialog, Menu, Tray } = require("electron");
 const { sync } = require("sync-files-cipher");
 const fs = require("fs");
 const Store = require("electron-store");
@@ -13,6 +10,30 @@ const USERNAME_SYNC_PATH_KEY = "username";
 
 var win = null;
 var watcher = null;
+var tray = null;
+
+// --- app ---
+app.whenReady().then(async () => {
+  await createWindow();
+  creatCloseEvent();
+  checkIfPathToSynExist();
+});
+
+app.on("before-quit", () => (app.quitting = true));
+
+app.on("activate", () => {
+  // On macOS it's common to re-create a window in the app when the
+  // dock icon is clicked and there are no other windows open.
+  if (BrowserWindow.getAllWindows().length === 0) {
+    if (win) {
+      win.show();
+    } else {
+      createWindow();
+    }
+  }
+});
+
+// --- utils ---
 
 function createWindow() {
   // Create the browser window.
@@ -27,52 +48,26 @@ function createWindow() {
       enableRemoteModule: false, // turn off remote
       preload: path.join(__dirname, "preload.js"),
     },
+    icon: path.join(__dirname, 'icons/png/256x256.png'),
   });
-
-  // and load the index.html of the app.
-  win.loadFile("index.html");
-  if (isDev) {
-    win.loadURL("http://localhost:3000");
-  } else {
-    server.use("/", express.static("build"));
-    const infos = server.listen(0, "localhost", () =>
-      win.loadURL(`http://localhost:${infos.address().port}/index.html`)
-    );
-  }
-  //win.loadURL("https://streamsforlab.bucaramanga.upb.edu.co");
-  // Open the DevTools.
-  // if (isDev) {
-  //   win.webContents.openDevTools({ mode: "detach" });
-  // }
+  win.loadURL("http://localhost:3000");
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.whenReady().then(async () => {
-  await createWindow();
-  checkIfPathToSynExist();
-});
+const creatCloseEvent = () => {
+  win.on("close", (event) => {
+    if (app.quitting) {
+      console.log("quitting true");
+      win = null;
+    } else {
+      console.log("quitting false");
+      event.preventDefault();
+      win.hide();
+      createTray();
+      return false;
+    }
+  });
+};
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
-  }
-});
-
-app.on("activate", () => {
-  // On macOS it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
-  }
-});
-
-
-// --- utils ---
 const sendError = (message) => {
   win.webContents.send("sync-error", message);
 };
@@ -87,8 +82,7 @@ const startToSync = async (path) => {
         console.log(eventType, pathChanged);
 
         // get type
-        let type = getMymeTypeByExtension(eventType, pathChanged)
-
+        let type = getMymeTypeByExtension(eventType, pathChanged);
 
         // if change file
         if (eventType === "CHANGE") {
@@ -139,19 +133,30 @@ const startToSync = async (path) => {
 };
 
 const getMymeTypeByExtension = (eventType, pathChanged) => {
+  const imageExtensions = ["png", "jpeg", "gif"];
+  let type = "file";
 
-  const imageExtensions = ["png", "jpeg", "gif"]
-  let type = 'file'
-
-  if (eventType.includes('FILE')) {
+  if (eventType.includes("FILE")) {
     const extension = pathChanged.split(".").pop().toLocaleLowerCase();
     if (imageExtensions.includes(extension)) type = "photo";
     if (extension === "mp4") type = "video";
   }
 
   console.log("TYPE: ", type);
-  return type
-}
+  return type;
+};
+
+const createTray = () => {
+  if (!tray) {
+    tray = new Tray("build/icons/png/icon.png");
+    const contextMenu = Menu.buildFromTemplate([
+      { label: "Show", click: () => win.show() },
+      { label: "Close", click: () => app.quit() },
+    ]);
+    tray.setToolTip("Streams for labs");
+    tray.setContextMenu(contextMenu);
+  }
+};
 
 // ---- IPC ----
 ipcMain.on("sync", async (event, username) => {
@@ -177,22 +182,22 @@ ipcMain.on("sync", async (event, username) => {
 
 // remove sync folder
 ipcMain.on("desynchronize", async (event, arg) => {
-  watcher.close().then(async () => {
-    await store.delete(SYNC_PATH_KEY);
-    await store.delete(USERNAME_SYNC_PATH_KEY);
-    event.reply("desynchronize-success", null);
-  })
-  .catch(err => sendError("Close watcher error: ", err.message));
+  watcher
+    .close()
+    .then(async () => {
+      await store.delete(SYNC_PATH_KEY);
+      await store.delete(USERNAME_SYNC_PATH_KEY);
+      event.reply("desynchronize-success", null);
+    })
+    .catch((err) => sendError("Close watcher error: ", err.message));
 });
-
 
 // get path sync if exiots and send to react sync section
 ipcMain.on("get-path-syncronized", (event, arg) => {
   const path = store.get(SYNC_PATH_KEY);
   console.log("Path exist ->", path);
-  if(path)event.reply("path-syncronized", path);
+  if (path) event.reply("path-syncronized", path);
 });
-
 
 // electon check if exist a dir synced for stat to sync
 const checkIfPathToSynExist = () => {
