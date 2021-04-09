@@ -67,14 +67,14 @@ const Sync = ({ showMessage }) => {
           </h2>
           {path === "" ? (
             <button onClick={sync} className="btn btn-info">
-              <i className="fas fa-sync"></i> Browser
+              <i className="fas fa-sync mr-2"></i> Browser
             </button>
           ) : (
-            <div className="d-flex flex-column justify-content-cener">
+            <div className="d-flex flex-column justify-content-cener align-items-center">
               <img
-                width="50%"
+                width="40%"
                 src="/images/spinning-arrows.gif"
-                className="ml-5 mt-2 mb-4"
+                className="mt-2 mb-4"
               />
               <button onClick={desynchronize} className="btn btn-danger">
                 {" "}

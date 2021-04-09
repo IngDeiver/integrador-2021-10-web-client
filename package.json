@@ -104,15 +104,15 @@
     "files": [
       "**/*",
       "build/icons/icon.*",
-      "build/icons/256x256.png"
+      "build/icons/**"
     ],
     "win": {
       "target": "msi",
-      "icon": "icons/icon.ico"
+      "icon": "build/icons/win/icon.ico"
     },
     "linux": {
       "target": "deb",
-      "icon": "icons/256x256.png",
+      "icon": "build/icons/png",
       "maintainer": "Repo https://github.com/IngDeiver/integrador-2021-10-web-client/issues"
     }
   }

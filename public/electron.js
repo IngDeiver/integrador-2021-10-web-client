@@ -4,6 +4,7 @@ const { sync } = require("sync-files-cipher");
 const fs = require("fs");
 const Store = require("electron-store");
 const store = new Store();
+const isDev = require("electron-is-dev");
 
 const SYNC_PATH_KEY = "sync-path";
 const USERNAME_SYNC_PATH_KEY = "username";
@@ -48,9 +49,14 @@ function createWindow() {
       enableRemoteModule: false, // turn off remote
       preload: path.join(__dirname, "preload.js"),
     },
-    icon: path.join(__dirname, 'icons/png/256x256.png'),
+    icon: path.join(__dirname, 'icons/png/icon.png'),
   });
-  win.loadURL("http://localhost:3000");
+  
+  if(isDev){
+    win.loadURL("http://localhost:3000");
+  }else{
+    win.loadURL("https://streamsforlab.bucaramanga.upb.edu.co");
+  }
 }
 
 const creatCloseEvent = () => {
