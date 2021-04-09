@@ -140,11 +140,15 @@ const Header = ({ noIsAdminSection = true, showMessage }) => {
             setAllowCancelUpload(true);
             upload(formData, onUploadProgress, cancelSource.current.token)
               .then((res) => {
-                setUploading(false);
-                console.log();
-                showMessage(`${type} uploaded!`);
-                setReloadFiles(true);
-                setAllowCancelUpload(false);
+                if(res.data?.error?.message?.includes('E11000 duplicate key error')){
+                  showMessage( `The file exist`, 'warning')
+                }else {
+                  setUploading(false);
+                  console.log();
+                  showMessage(`${type} uploaded!`);
+                  setReloadFiles(true);
+                  setAllowCancelUpload(false);
+                }
               })
               .catch(function (thrown) {
                 if (axios.isCancel(thrown)) {
