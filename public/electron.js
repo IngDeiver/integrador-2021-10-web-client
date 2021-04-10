@@ -5,36 +5,31 @@ const fs = require("fs");
 const Store = require("electron-store");
 const store = new Store();
 const isDev = require("electron-is-dev");
+const axios = require("axios");
 
 const SYNC_PATH_KEY = "sync-path";
 const USERNAME_SYNC_PATH_KEY = "username";
+const TOKEN_KEY = "msal-token";
+const GATEWAY_URI = isDev
+  ? "localhost:3000"
+  : "https://streamsforlab.bucaramanga.upb.edu.co/gateway";
 
 var win = null;
 var watcher = null;
 var tray = null;
+var count_add_file_messages = 0;
+var count_remove_file_messages = 0;
+var count_sync_file_messages = 0;
 
 // --- app ---
-app.whenReady().then(async () => {
-  await createWindow();
-  await creatCloseEvent();
-  checkIfPathToSynExist();
-});
-
-app.on("before-quit", () => (app.quitting = true));
-
-app.on("activate", () => {
-  // On macOS it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (BrowserWindow.getAllWindows().length === 0) {
-    if (win) {
-      win.show();
-    } else {
-      createWindow();
-    }
+// electon check if exist a dir synced for stat to sync
+const checkIfPathToSynExist = () => {
+  const path = store.get(SYNC_PATH_KEY);
+  if (path) {
+    console.log("resume-sync");
+    startToSync(path);
   }
-});
-
-// --- utils ---
+};
 
 function createWindow() {
   // Create the browser window.
@@ -49,12 +44,12 @@ function createWindow() {
       enableRemoteModule: false, // turn off remote
       preload: path.join(__dirname, "preload.js"),
     },
-    icon: path.join(__dirname, 'icons/png/icon.png'),
+    icon: path.join(__dirname, "icons/png/icon.png"),
   });
-  
-  if(isDev){
+
+  if (isDev) {
     win.loadURL("http://localhost:3000");
-  }else{
+  } else {
     win.loadURL("https://streamsforlab.bucaramanga.upb.edu.co");
   }
 }
@@ -74,6 +69,26 @@ const creatCloseEvent = () => {
   });
 };
 
+app.whenReady().then(async () => {
+  await createWindow();
+  await creatCloseEvent();
+});
+
+app.on("before-quit", () => (app.quitting = true));
+
+app.on("activate", () => {
+  // On macOS it's common to re-create a window in the app when the
+  // dock icon is clicked and there are no other windows open.
+  if (BrowserWindow.getAllWindows().length === 0) {
+    if (win) {
+      win.show();
+    } else {
+      createWindow();
+    }
+  }
+});
+
+// --- utils ---
 const sendError = (message) => {
   win.webContents.send("sync-error", message);
 };
@@ -92,15 +107,12 @@ const startToSync = async (path) => {
 
         // if change file
         if (eventType === "CHANGE") {
-          console.log("CHANGE!");
-          win.webContents.send(
-            "sync-change",
-            `The file ${pathChanged.split("/").pop()} was synced`
-          );
-
+          console.log("--- CHANGE ---");
+            win.webContents.send("sync-change", `The file ${pathChanged.split('/').pop()} was synced`);
           //  if add file
         } else if (eventType === "ADD_FILE") {
-          console.log("ADD_FILE!");
+          console.log(" --- ADD_FILE ---");
+          console.log("-->", count_add_file_messages);
           const weight = fs.statSync(pathChanged).size;
           const file = {
             path: `/home/streams-for-lab.co/${username}${pathChanged}`,
@@ -111,11 +123,11 @@ const startToSync = async (path) => {
           };
 
           // Ad dato to database
-          win.webContents.send("sync-add-file", file);
+          addFileToDataBase(file);
 
           // if remove file
         } else if (eventType === "REMOVE_FILE") {
-          console.log(REMOVE_FILE);
+          console.log("REMOVE_FILE");
           win.webContents.send(
             "sync-change",
             `The file ${pathChanged.split("/").pop()} was removed`
@@ -148,7 +160,6 @@ const getMymeTypeByExtension = (eventType, pathChanged) => {
     if (extension === "mp4") type = "video";
   }
 
-  console.log("TYPE: ", type);
   return type;
 };
 
@@ -164,15 +175,28 @@ const createTray = () => {
   }
 };
 
+const addFileToDataBase = async (file) => {
+  const token = await store.get(TOKEN_KEY);
+  // axios.post(`${GATEWAY_URI}/file/sync`, file,
+  // { headers: {'Authorization': `Bearer ${token}`, 'Content-Type' : 'application/json' }})
+  // then(() => win.webContents.send("sync-add-file-success", file))
+  // .catch(err => sendError("Save file into db error: " + err.message))
+  if (count_add_file_messages === 0) {
+    win.webContents.send("sync-add-file-success");
+    count_add_file_messages++
+  }else{
+    count_add_file_messages = 0
+  }
+  
+};
+
 // ---- IPC ----
-ipcMain.on("sync", async (event, username) => {
+ipcMain.on("start-sync", async (event, username) => {
   paths = dialog.showOpenDialogSync(win, {
     title: "Select a directory to sync",
     buttonLabel: "Select folder",
     properties: ["openDirectory"],
   });
-
-  console.log("Path elegido: ", paths);
 
   if (paths) {
     await store.set(SYNC_PATH_KEY, paths[0]);
@@ -181,18 +205,21 @@ ipcMain.on("sync", async (event, username) => {
     event.reply("sync-success-dir", paths[0]);
     return;
   }
-
-  console.log("Despues xcd");
   event.reply("sync-success-dir", paths);
 });
 
-// remove sync folder
+ipcMain.on("resume-sync", async (event, arg) => {
+  checkIfPathToSynExist();
+});
+
+// remove sync path
 ipcMain.on("desynchronize", async (event, arg) => {
   watcher
     .close()
     .then(async () => {
       await store.delete(SYNC_PATH_KEY);
       await store.delete(USERNAME_SYNC_PATH_KEY);
+      await store.delete(TOKEN_KEY);
       event.reply("desynchronize-success", null);
     })
     .catch((err) => sendError("Close watcher error: ", err.message));
@@ -205,8 +232,7 @@ ipcMain.on("get-path-syncronized", (event, arg) => {
   if (path) event.reply("path-syncronized", path);
 });
 
-// electon check if exist a dir synced for stat to sync
-const checkIfPathToSynExist = () => {
-  const path = store.get(SYNC_PATH_KEY);
-  if (path) startToSync(path);
-};
+ipcMain.on("set-auth", async (event, token) => {
+  console.log("set-auth: ", token);
+  await store.set(TOKEN_KEY, token);
+});

@@ -1,7 +1,8 @@
+import isElectron from "is-electron";
 import react from "react";
 import WithMessage from "../hocs/withMessage";
 import {msalInstance, scopes} from '../util/auth'
-
+const { ipcRenderer } = window;
 
 // Buttom for login with office
 const LoginButtom = ({showMessage, disabled}) => {
@@ -11,7 +12,11 @@ const LoginButtom = ({showMessage, disabled}) => {
     try {
       const instance = await msalInstance();
       const acces_token = await instance.loginPopup({scopes})
-      console.log(acces_token)
+
+      if(isElectron()){
+        ipcRenderer.send("set-auth", acces_token);
+      }
+
       window.location.replace("/");
     } catch (err) {
       console.log(err)

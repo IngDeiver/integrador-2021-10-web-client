@@ -13,6 +13,7 @@ import { AppContext } from "../context/AppProvider";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 import isElectron from "is-electron";
+import { saveFileWithSync } from "../services/fileApiService";
 
 const GB = 1000000000; //numero de bytes que tiene 1GB
 const { ipcRenderer } = window;
@@ -29,7 +30,9 @@ const Header = ({ noIsAdminSection = true, showMessage }) => {
   const cancelSource = react.useRef(null);
   const location = useLocation();
 
-  useEffect(() => {}, [location]);
+  useEffect(() => {
+    console.log("RENDER HEADER!");
+  }, [location]);
 
   const onUploadProgress = (progressEvent) => {
     const percentCompleted = Math.round(
@@ -58,7 +61,8 @@ const Header = ({ noIsAdminSection = true, showMessage }) => {
           setReloadFiles(true);
         })
         .catch((err) => showMessage(err.message, "error"));
-    } else { // si son fotos
+    } else {
+      // si son fotos
       removePhotos(filesToRemove.data)
         .then(() => {
           showMessage("Photo(s) removed!");
@@ -144,12 +148,16 @@ const Header = ({ noIsAdminSection = true, showMessage }) => {
             setAllowCancelUpload(true);
             upload(formData, onUploadProgress, cancelSource.current.token)
               .then((res) => {
-                if(res.data?.error?.message?.includes('E11000 duplicate key error')){
-                  showMessage( `The file exist`, 'warning')
+                if (
+                  res.data?.error?.message?.includes(
+                    "E11000 duplicate key error"
+                  )
+                ) {
+                  showMessage(`The file exist`, "warning");
                   setUploading(false);
                   setReloadFiles(true);
                   setAllowCancelUpload(false);
-                }else {
+                } else {
                   setUploading(false);
                   showMessage(`${type} uploaded!`);
                   setReloadFiles(true);
@@ -239,12 +247,15 @@ const Header = ({ noIsAdminSection = true, showMessage }) => {
               </li>
             )}
             <li className="nav-item">
-              <button className="btn btn-outline-secondary" onClick={() => {
-                logout()
-                if(isElectron()){
-                  ipcRenderer.send("desynchronize", null);
-                }
-              }}>
+              <button
+                className="btn btn-outline-secondary"
+                onClick={() => {
+                  logout();
+                  if (isElectron()) {
+                    ipcRenderer.send("desynchronize", null);
+                  }
+                }}
+              >
                 <i className="fas fa-sign-out-alt"></i> Logout
               </button>
             </li>

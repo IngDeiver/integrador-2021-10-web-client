@@ -18,7 +18,6 @@ const Sync = ({ showMessage }) => {
     if (isElectron()) {
       // set path when client sync a directory
       ipcRenderer.on("sync-success-dir", (event, path) => {
-        console.log("sync-success path: ", path);
         if (path) {
           setPath(path);
           showMessage("Synchronized directory");
@@ -41,13 +40,10 @@ const Sync = ({ showMessage }) => {
       ipcRenderer.send("get-path-syncronized", null);
     }
 
-    // return () => {
-    //   ipcRenderer.removeAllListeners()
-    // }
-  });
+  },[]);
 
   const sync = () => {
-    ipcRenderer.send("sync", user.username);
+    ipcRenderer.send("start-sync", user.username);
   };
 
   const desynchronize = () => {

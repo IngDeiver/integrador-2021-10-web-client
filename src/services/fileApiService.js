@@ -24,13 +24,6 @@ export const upload = async (formData, onUploadProgress, cancelToken) => {
     onUploadProgress})
 }
 
-export const saveFileWithSync = async (file) => {
-    const { token } = await  getLocalSesion();
-    console.log("El token -->>> ", token);
-    const axiosInstance = await getAxiosInstance()
-    return axiosInstance.post('/file/sync', file, { headers: {'Authorization': `Bearer ${token}`, 'Content-Type' : 'application/json' }})
-}
-
 
 export const downloadFile = async (fileId) => {
     const { token } = await  getLocalSesion();

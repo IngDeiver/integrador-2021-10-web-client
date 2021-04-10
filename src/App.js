@@ -25,7 +25,6 @@ import Photos from "./pages/photos";
 import Videos from "./pages/videos";
 import Shared from "./pages/shared";
 import Syncronization from "./pages/sync";
-import { saveFileWithSync } from './services/fileApiService'
 
 // Auth utils
 import { getLocalSesion } from "./util/auth";
@@ -33,8 +32,6 @@ import isElectron from "is-electron";
 
 // SHow when sesion is loading
 const Loading = () => <div className="fixed-top">Loading...</div>;
-
-//ipc
 const { ipcRenderer } = window;
 
 // Denied access if not exists a sesion as user
@@ -129,49 +126,33 @@ function App({ showMessage }) {
 
   useEffect(() => {
     console.log("Render App");
-    
-    if(isElectron()){
-      // ipc ons
-    ipcRenderer.on("sync-error", (event, message) => {
-      console.error("sync-error: " + message);
-      showMessage(message, "error");
-    });
-
-    ipcRenderer.on("sync-change", (event, message) => {
-      console.log("Se llamo sync-change en react!");
-      showMessage(message);
-    });
-
-    ipcRenderer.on("sync-add-file", async (event, file) => {
-      if(await getLocalSesion()){
-        saveFileWithSync(file)
-        .then((res) => {
-           // if exist   
-          if(res.data?.error?.message?.includes('E11000 duplicate key error')){
-            showMessage( `The file ${file.name} exist and should fixed sync when exist`, 'warning')
-          }else{// if the file not exist
-            showMessage( `The file ${file.name} was added`)
-          }
-        })
-        .catch((err) => {
-          console.error("Eror al guardar archivo: ", err.message);
-          showMessage('An error occurred while syncing', 'error')
-        })
-      }else{
-        console.log("hp monda!");
-      }
-     
-    });
-
-    ipcRenderer.on("sync-remove-file", (event, file) => {
-      console.log("Se llamo sync-remove-file en react!");
-    });
-    }
 
     // Get sesion and set context
     getLocalSesion()
       .then(async (auth) => {
         setSesion(auth);
+
+        // set  global listeners for show messages
+        if (isElectron()) {
+          ipcRenderer.on("sync-error", (event, message) => {
+            console.error("sync-error: " + message);
+            showMessage(message, "error");
+          });
+
+          ipcRenderer.on("sync-change", (event, message) => {
+            console.log("Se llamo sync-change en react!");
+            showMessage(message);
+          });
+
+          ipcRenderer.on("sync-add-file-success", async (event, arg) => {
+            showMessage(`The file(s) was added`);
+          });
+
+          ipcRenderer.on("sync-remove-file", (event, file) => {
+            console.log("Se llamo sync-remove-file en react!");
+          });
+        }
+
         // if exist a user authenticate set to context
         if (auth) {
           if (auth.role === "ADMIN") {
@@ -183,15 +164,24 @@ function App({ showMessage }) {
               .replace(/\s/g, "-")
               .toLowerCase();
             setUser({ username });
+
+            // SET TOKEN INTO ELECTRON STORAGE
+            if (isElectron()) {
+              const { token } = auth;
+              ipcRenderer.send("set-auth", token);
+
+              // resume sync if dir synced exist
+              ipcRenderer.send("resume-sync", null);
+
+              // return () => {
+              //   ipcRenderer.removeAllListeners()
+              // }
+            }
           }
         }
         setLoadingSesion(false);
       })
       .catch(() => showMessage("Invalid sesión", "error"));
-
-    // return () => {
-    //   ipcRenderer.removeAllListeners();
-    // };
   }, []);
 
   return (
