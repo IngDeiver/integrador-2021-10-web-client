@@ -49,13 +49,17 @@ const File = ({
   const calSize = (bytes) => {
     const GB = 1000000000; //numero de bytes que tiene 1GB
     const MG = 1048576; //numero de bytes que tiene 1MG
+    const KB = 1024; //numero de bytes que tiene 1KB
 
-    // Megabytes
-    if (bytes <= GB) {
-      return `${(bytes / MG).toFixed(2)} MB`;
-    } else {
-      // Gigabytes
+    // Gigabytes
+    if (bytes >= GB) {
       return `${(bytes / GB).toFixed(2)} GB`;
+    } else if (bytes >= MG){
+      //Megabytes/
+      return `${(bytes / MG).toFixed(2)} MB`;
+    }else{
+      // Kilobytes/
+      return `${(bytes / KB).toFixed(2)} KB`;
     }
   };
 
