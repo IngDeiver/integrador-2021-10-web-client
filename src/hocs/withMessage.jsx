@@ -15,7 +15,7 @@ const WithMessage = (Component) => {
           <ToastContainer
             closeOnClick
             position="bottom-right"
-            autoClose={1000}
+            autoClose={1500}
             hideProgressBar={true}
             newestOnTop={false}
             closeOnClick

@@ -118,11 +118,18 @@ const startToSync = async (path) => {
 
           // if remove file
         } else if (eventType === "REMOVE_FILE") {
-          win.webContents.send(
-            "sync-change",
-            `The file ${pathChanged.split("/").pop()} was removed`
-          );
+          console.log("Hey borro un archivod en la DB");
           // remove dato from database
+          const file = {
+            type,
+            path: `/home/streams-for-lab.co/${username}${pathChanged.replace(path, '')}`,
+            name: pathChanged.split("/").pop(),
+          }
+          removeFileFromDataBase(file)
+        } else if(eventType === "REMOVE_DIR"){
+          win.webContents.send("sync-change", `The dir ${pathChanged.split("/").pop()} was removed`);
+        } else if(eventType === "ADD_DIR"){
+          win.webContents.send("sync-change", `The dir ${pathChanged.split("/").pop()} was synced`);
         }
       },
 
@@ -178,13 +185,44 @@ const addFileToDataBase = async (file) => {
   const request = net.request(requestApi);
   request.on('response', res => { 
     if (res.statusCode !== 200) {
-      sendError("Save file into db error: " + res.statusCode)
+      sendError("Save file to db error: " + res.statusCode)
     }else {
       win.webContents.send("sync-change", `The file ${file.name} was synced`);
     }
    });
 
   request.write(JSON.stringify(file))
+  request.end();
+};
+
+
+
+const removeFileFromDataBase = async (file) => {
+  const token = await store.get(TOKEN_KEY);
+
+  const targetService = 'file'
+  if(file.type === 'photo') targetService = 'photo'
+  else if(file.type === 'video') targetService = 'video'
+
+  const requestApi = {
+    method: 'DELETE',
+    headers: {'Authorization': `Bearer ${token}`, 'Content-Type' : 'application/json' },
+    url: `${GATEWAY_URI}/api/${targetService}/sync`,
+    httpsAgent: new https.Agent({   
+      rejectUnauthorized: false
+    })
+  }
+
+  const request = net.request(requestApi);
+  request.on('response', res => { 
+    if (res.statusCode !== 200) {
+      sendError("Remove file from db error: " + res.statusCode)
+    }else {
+      win.webContents.send("sync-change", `The file ${file.name} was removed`);
+    }
+   });
+
+  request.write(JSON.stringify({ pathToRemove: file.path }))
   request.end();
 };
 
