@@ -189,7 +189,7 @@ const File = ({
 
 
   return (
-    <div className="container-fluid">
+    <div className="container-fluid mb-5">
 
       { dirs.children && 
         <div className="my-2">

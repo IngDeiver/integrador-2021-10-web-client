@@ -99,7 +99,7 @@ const startToSync = async (path) => {
         console.log(eventType, pathChanged);
 
         // get type
-        let type = getMymeTypeByExtension(eventType, pathChanged);
+        const type = getMymeTypeByExtension(eventType, pathChanged);
 
         // if change file
         if (eventType === "SYNC") {
@@ -150,12 +150,13 @@ const getMymeTypeByExtension = (eventType, pathChanged) => {
   const imageExtensions = ["png", "jpeg", "gif"];
   let type = "file";
 
-  if (eventType.includes("FILE")) {
+  if (!eventType.includes("DIR")) {
     const extension = pathChanged.split(".").pop().toLocaleLowerCase();
     if (imageExtensions.includes(extension)) type = "photo";
     if (extension === "mp4") type = "video";
   }
 
+  console.log("Paht: ", pathChanged, " Type: ", type);
   return type;
 };
 
@@ -200,7 +201,7 @@ const addFileToDataBase = async (file) => {
 const removeFileFromDataBase = async (file) => {
   const token = await store.get(TOKEN_KEY);
 
-  const targetService = 'file'
+  let targetService = 'file'
   if(file.type === 'photo') targetService = 'photo'
   else if(file.type === 'video') targetService = 'video'
 
