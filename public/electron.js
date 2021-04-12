@@ -1,25 +1,23 @@
 const path = require("path");
-const { app, BrowserWindow, ipcMain, dialog, Menu, Tray } = require("electron");
+const { app, BrowserWindow, ipcMain, dialog, Menu, Tray, net} = require("electron");
 const { sync } = require("sync-files-cipher");
 const fs = require("fs");
 const Store = require("electron-store");
 const store = new Store();
 const isDev = require("electron-is-dev");
-const axios = require("axios");
+const https = require('https')
 
 const SYNC_PATH_KEY = "sync-path";
 const USERNAME_SYNC_PATH_KEY = "username";
 const TOKEN_KEY = "msal-token";
 const GATEWAY_URI = isDev
-  ? "localhost:3000"
+  ? "http://localhost:8000"
   : "https://streamsforlab.bucaramanga.upb.edu.co/gateway";
 
 var win = null;
 var watcher = null;
 var tray = null;
 var count_add_file_messages = 0;
-var count_remove_file_messages = 0;
-var count_sync_file_messages = 0;
 
 // --- app ---
 // electon check if exist a dir synced for stat to sync
@@ -57,10 +55,8 @@ function createWindow() {
 const creatCloseEvent = () => {
   win.on("close", (event) => {
     if (app.quitting) {
-      console.log("quitting true");
       win = null;
     } else {
-      console.log("quitting false");
       event.preventDefault();
       win.hide();
       createTray();
@@ -106,16 +102,11 @@ const startToSync = async (path) => {
         let type = getMymeTypeByExtension(eventType, pathChanged);
 
         // if change file
-        if (eventType === "CHANGE") {
-          console.log("--- CHANGE ---");
-            win.webContents.send("sync-change", `The file ${pathChanged.split('/').pop()} was synced`);
-          //  if add file
-        } else if (eventType === "ADD_FILE") {
-          console.log(" --- ADD_FILE ---");
-          console.log("-->", count_add_file_messages);
+        if (eventType === "SYNC") {
+          console.log("heY AGREGO UN ARCHI EN LA DB?");
           const weight = fs.statSync(pathChanged).size;
           const file = {
-            path: `/home/streams-for-lab.co/${username}${pathChanged}`,
+            path: `/home/streams-for-lab.co/${username}${pathChanged.replace(path, '')}`,
             name: pathChanged.split("/").pop(),
             weight,
             type,
@@ -127,7 +118,6 @@ const startToSync = async (path) => {
 
           // if remove file
         } else if (eventType === "REMOVE_FILE") {
-          console.log("REMOVE_FILE");
           win.webContents.send(
             "sync-change",
             `The file ${pathChanged.split("/").pop()} was removed`
@@ -137,7 +127,6 @@ const startToSync = async (path) => {
       },
 
       function (error) {
-        console.log("Sync error: ", error);
         sendError("An error occurred while syncing: ", error.message);
       },
       `/home/streams-for-lab.co/${username}`
@@ -177,17 +166,26 @@ const createTray = () => {
 
 const addFileToDataBase = async (file) => {
   const token = await store.get(TOKEN_KEY);
-  // axios.post(`${GATEWAY_URI}/file/sync`, file,
-  // { headers: {'Authorization': `Bearer ${token}`, 'Content-Type' : 'application/json' }})
-  // then(() => win.webContents.send("sync-add-file-success", file))
-  // .catch(err => sendError("Save file into db error: " + err.message))
-  if (count_add_file_messages === 0) {
-    win.webContents.send("sync-add-file-success");
-    count_add_file_messages++
-  }else{
-    count_add_file_messages = 0
+  const requestApi = {
+    method: 'POST',
+    headers: {'Authorization': `Bearer ${token}`, 'Content-Type' : 'application/json' },
+    url: `${GATEWAY_URI}/api/file/sync`,
+    httpsAgent: new https.Agent({   
+      rejectUnauthorized: false
+    })
   }
-  
+
+  const request = net.request(requestApi);
+  request.on('response', res => { 
+    if (res.statusCode !== 200) {
+      sendError("Save file into db error: " + res.statusCode)
+    }else {
+      win.webContents.send("sync-change", `The file ${file.name} was synced`);
+    }
+   });
+
+  request.write(JSON.stringify(file))
+  request.end();
 };
 
 // ---- IPC ----
@@ -201,11 +199,13 @@ ipcMain.on("start-sync", async (event, username) => {
   if (paths) {
     await store.set(SYNC_PATH_KEY, paths[0]);
     await store.set(USERNAME_SYNC_PATH_KEY, username);
+    console.log("Sync started");
     startToSync(paths[0]);
-    event.reply("sync-success-dir", paths[0]);
-    return;
+    event.sender.send("sync-success-dir", paths[0]);
+  }else{
+    event.reply("sync-success-dir", paths);
   }
-  event.reply("sync-success-dir", paths);
+  
 });
 
 ipcMain.on("resume-sync", async (event, arg) => {
@@ -219,7 +219,6 @@ ipcMain.on("desynchronize", async (event, arg) => {
     .then(async () => {
       await store.delete(SYNC_PATH_KEY);
       await store.delete(USERNAME_SYNC_PATH_KEY);
-      await store.delete(TOKEN_KEY);
       event.reply("desynchronize-success", null);
     })
     .catch((err) => sendError("Close watcher error: ", err.message));
@@ -228,11 +227,9 @@ ipcMain.on("desynchronize", async (event, arg) => {
 // get path sync if exiots and send to react sync section
 ipcMain.on("get-path-syncronized", (event, arg) => {
   const path = store.get(SYNC_PATH_KEY);
-  console.log("Path exist ->", path);
   if (path) event.reply("path-syncronized", path);
 });
 
 ipcMain.on("set-auth", async (event, token) => {
-  console.log("set-auth: ", token);
   await store.set(TOKEN_KEY, token);
 });

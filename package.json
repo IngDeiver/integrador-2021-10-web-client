@@ -35,7 +35,7 @@
     "react-scripts": "^4.0.2",
     "react-toastify": "^7.0.3",
     "styled-components": "^5.2.1",
-    "sync-files-cipher": "^0.3.0",
+    "sync-files-cipher": "^0.3.4",
     "web-vitals": "^1.1.0"
   },
   "scripts": {
