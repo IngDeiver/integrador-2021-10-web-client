@@ -167,6 +167,8 @@ const Photos = ({ showMessage }) => {
                         disabled={existRequest}
                         type="button"
                         className="btn btn-success btn-sm ml-2"
+                        data-toggle="modal" 
+                        data-target="#ventanaModalShared"
                       >
                         Share
                       </button>
@@ -185,6 +187,35 @@ const Photos = ({ showMessage }) => {
                       
                     </div>
                   {/* <div className="desc">{image.name}</div> */}
+                  {/* Modal */}
+                  <div className="modal" id="ventanaModalShared" tabindex="-1" role="dialog" aria-labelledby="tituloVentana" aria-hidden="true"> 
+                          <div className="modal-dialog" role="document">
+                            <div className="modal-content">
+                              <div className="modal-header">
+                                <h5>Compartir con:</h5>
+                                <button className="btn btn-warning" type="button" data-dismiss="modal">
+                                  Cerrar
+                                </button>
+                              </div>
+
+                              <div className="modal-body">
+                                <div className="input-group">
+                                  <div className="input-group-pretend">
+                                    <span className="input-group-text">@</span>
+                                  </div>
+                                  <input type="text" className="from-control" placeholder="Usuario"></input>
+                                </div>
+                              </div>
+
+                              <div className="modal-footer">
+                                <button className="compartir" data-dismiss="modal" arial-label="Compartir">
+                                  Compartir
+                                </button>
+                              </div>
+
+                            </div>
+                          </div>
+                        </div>
                 </div>
               </div>
             ))}
