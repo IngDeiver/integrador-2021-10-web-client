@@ -135,21 +135,11 @@ function App({ showMessage }) {
         // set  global listeners for show messages
         if (isElectron()) {
           ipcRenderer.on("sync-error", (event, message) => {
-            console.error("sync-error: " + message);
             showMessage(message, "error");
           });
 
           ipcRenderer.on("sync-change", (event, message) => {
-            console.log("Se llamo sync-change en react!");
             showMessage(message);
-          });
-
-          ipcRenderer.on("sync-add-file-success", async (event, arg) => {
-            showMessage(`The file(s) was added`);
-          });
-
-          ipcRenderer.on("sync-remove-file", (event, file) => {
-            console.log("Se llamo sync-remove-file en react!");
           });
         }
 
@@ -172,10 +162,7 @@ function App({ showMessage }) {
 
               // resume sync if dir synced exist
               ipcRenderer.send("resume-sync", null);
-
-              // return () => {
-              //   ipcRenderer.removeAllListeners()
-              // }
+              
             }
           }
         }

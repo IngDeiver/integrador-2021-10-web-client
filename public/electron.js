@@ -17,7 +17,6 @@ const GATEWAY_URI = isDev
 var win = null;
 var watcher = null;
 var tray = null;
-var count_add_file_messages = 0;
 
 // --- app ---
 // electon check if exist a dir synced for stat to sync
@@ -242,7 +241,7 @@ ipcMain.on("start-sync", async (event, username) => {
     startToSync(paths[0]);
     event.sender.send("sync-success-dir", paths[0]);
   }else{
-    event.reply("sync-success-dir", paths);
+    event.sender.send("sync-success-dir", paths);
   }
   
 });
@@ -258,7 +257,7 @@ ipcMain.on("desynchronize", async (event, arg) => {
     .then(async () => {
       await store.delete(SYNC_PATH_KEY);
       await store.delete(USERNAME_SYNC_PATH_KEY);
-      event.reply("desynchronize-success", null);
+     event.sender.send("desynchronize-success", null);
     })
     .catch((err) => sendError("Close watcher error: ", err.message));
 });
@@ -266,7 +265,7 @@ ipcMain.on("desynchronize", async (event, arg) => {
 // get path sync if exiots and send to react sync section
 ipcMain.on("get-path-syncronized", (event, arg) => {
   const path = store.get(SYNC_PATH_KEY);
-  if (path) event.reply("path-syncronized", path);
+  if (path) event.sender.send("path-syncronized", path);
 });
 
 ipcMain.on("set-auth", async (event, token) => {
