@@ -4,6 +4,7 @@ import WithMessage from '../hocs/withMessage';
 import WithAppLayout from '../layouts/appLayout'
 import FileComponent from "../components/file";
 import { getFiles } from '../services/fileApiService'
+import { getUsuarios } from '../services/fileApiService'
 import { AppContext } from '../context/AppProvider';
 import { onSort } from '../util/sort'
 import { makeTree } from '../util/tree'
@@ -32,6 +33,12 @@ const Files = ({ showMessage }) => {
         children: sortFiles
       })
       setCurrentDir(current)
+    }
+    //Listado de Usuarios
+    const listUsuarios = () => {
+      getUsuarios().then((res) => {
+        console.log(res.data);
+      })
     }
 
     const listFiles = () => {
@@ -72,6 +79,7 @@ const Files = ({ showMessage }) => {
 
     useEffect(()=> {
       listFiles()
+      listUsuarios()
     }, [reloadFiles])
     
     return (
