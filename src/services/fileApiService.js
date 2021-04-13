@@ -24,6 +24,7 @@ export const upload = async (formData, onUploadProgress, cancelToken) => {
     onUploadProgress})
 }
 
+
 export const downloadFile = async (fileId) => {
     const { token } = await  getLocalSesion();
     const axiosInstance = await getAxiosInstance()

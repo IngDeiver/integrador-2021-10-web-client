@@ -29,10 +29,7 @@ const LoginAdmin = ({ showMessage }) => {
       <div className="my-5 d-flex flex-column align-items-center">
         <div className="border mx-5">
           <div className="d-flex flex-column align-items-center">
-            <i
-              className="fas fa-database mt-5"
-              style={{ color: "#48dbfb", fontSize: 150 }}
-            ></i>
+          <img src="/icons/png/icon.png" className ="my-2 mx-5"/>
             <h1>Streams For</h1>
             <h1>Lab</h1>
             <AdminLoginButtom disabled={isHuman ? false : true} />
