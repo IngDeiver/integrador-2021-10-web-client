@@ -265,6 +265,15 @@ ipcMain.on("desynchronize", async (event, arg) => {
     .catch((err) => sendError("Close watcher error: ", err.message));
 });
 
+ipcMain.on("sync-offline", async (event, arg) => {
+  watcher
+    .close()
+    .then(async () => {
+     event.sender.send("desynchronize-success", null);
+    })
+    .catch((err) => sendError("Close watcher error: ", err.message));
+});
+
 // get path sync if exiots and send to react sync section
 ipcMain.on("get-path-syncronized", (event, arg) => {
   const path = store.get(SYNC_PATH_KEY);

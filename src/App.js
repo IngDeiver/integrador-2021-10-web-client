@@ -124,8 +124,26 @@ function App({ showMessage }) {
   const [sesion, setSesion, setUser] = useContext(AppContext);
   const [loadingSesion, setLoadingSesion] = useState(true);
 
+  // check status red
+  const alertOnlineStatus = () => { 
+    if(navigator.onLine){
+     if(isElectron()){
+      ipcRenderer.send("resume-sync", null);
+     }
+      showMessage("Online")
+    }else{
+      if(isElectron()){
+        ipcRenderer.send("sync-offline", null);
+      }
+      showMessage("Offline", "warning")
+    }
+   }
+  
   useEffect(() => {
     console.log("Render App");
+
+    window.addEventListener('online', alertOnlineStatus)
+    window.addEventListener('offline', alertOnlineStatus)
 
     // Get sesion and set context
     getLocalSesion()
