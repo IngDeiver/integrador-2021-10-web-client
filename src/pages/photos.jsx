@@ -12,6 +12,7 @@ import {
 import { AppContext } from "../context/AppProvider";
 import Spinner from "../components/spinner";
 import { onSort } from "../util/sort";
+import Modal from "../components/share";
 
 const Photos = ({ showMessage }) => {
   const [currentImage, setCurrentImage] = useState({});
@@ -87,7 +88,6 @@ const Photos = ({ showMessage }) => {
         setExistRequest(false);
       });
   }
-
   function onRemovePhotos(index) {
     const _id = images[index]._id
     setExistRequest(true);
@@ -147,7 +147,6 @@ const Photos = ({ showMessage }) => {
                       <div classNam=" d-flex flex-row align-items-center justify-content-center">
                       <button
                         onClick={() => onRemovePhotos(index)}
-                        // Hacemos un boton para remover la imagen
                         type="button"
                         disabled={existRequest}
                         className="btn btn-danger btn-sm mx-2"
@@ -157,7 +156,6 @@ const Photos = ({ showMessage }) => {
                       <button
                         disabled={existRequest}
                         onClick={() => onDownloadPhotos(index)}
-                        // Hacemos un boton para descargar la imagen
                         type="button"
                         className="btn btn-info btn-sm"
                       >
@@ -183,39 +181,13 @@ const Photos = ({ showMessage }) => {
                         className="btn btn-outline-light mt-2"
                       >
                         Show
-                      </button>
-                      
+                      </button>                    
                     </div>
                   {/* <div className="desc">{image.name}</div> */}
                   {/* Modal */}
-                  <div className="modal" id="ventanaModalShared" tabindex="-1" role="dialog" aria-labelledby="tituloVentana" aria-hidden="true"> 
-                          <div className="modal-dialog" role="document">
-                            <div className="modal-content">
-                              <div className="modal-header">
-                                <h5>Share With:</h5>                               
-                              </div>
-
-                              <div className="modal-body">
-                                <div className="input-group">
-                                  <div className="input-group-pretend">
-                                    <span className="input-group-text">@</span>
-                                  </div>
-                                  <input type="text" className="from-control w-75" placeholder="User"></input>
-                                </div>
-                              </div>
-
-                              <div className="modal-footer">
-                              <button className="btn btn-warning" type="button" data-dismiss="modal">
-                                  Close
-                                </button>
-                                <button className="btn btn-success" arial-label="Compartir">
-                                  Share
-                                </button>
-                              </div>
-
-                            </div>
-                          </div>
-                        </div>
+                  <div>
+                    <Modal/>
+                  </div>             
                 </div>
               </div>
             ))}
