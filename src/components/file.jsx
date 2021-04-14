@@ -10,7 +10,7 @@ import { downloadVideo } from "../services/videoApiService";
 import { shareVideo } from "../services/videoApiService";
 import WithMessage from "../hocs/withMessage";
 import { AppContext } from "../context/AppProvider";
-import  { Modal } from './Modal'
+
 
 
 const File = ({
@@ -295,7 +295,6 @@ const File = ({
                     </div>
                   </div>
                 </div>
-                <Modal/>
               </div>
             )) )
           }
@@ -384,14 +383,14 @@ const File = ({
                           <div className="modal-dialog" role="document">
                             <div className="modal-content">
                               <div className="modal-header">
-                                <h5>Share With:</h5>                               
+                                <h5>Share With users</h5>                               
                               </div>
                               <div className="modal-body">
                                 <div className="input-group">
-                                  <div className="input-group-pretend">
-                                    <span className="input-group-text">@</span>
+                                  <div className="input-group-pretend mr-1">
+                                    <span className="input-group-text"><i style={{fontSize:20}} class="fas fa-user-plus"></i></span>
                                   </div>
-                                  <input id="input" type="text" className="from-control w-75" placeholder="User">                                              
+                                  <input id="input" type="text" className="from-control w-75" placeholder="Write a user...">                                              
                                   </input>                                                  
                                 </div>
                               </div>
