@@ -12,6 +12,7 @@ import {
 import { AppContext } from "../context/AppProvider";
 import Spinner from "../components/spinner";
 import { onSort } from "../util/sort";
+import Modal from "../components/share";
 
 const Photos = ({ showMessage }) => {
   const [currentImage, setCurrentImage] = useState({});
@@ -183,39 +184,13 @@ const Photos = ({ showMessage }) => {
                         className="btn btn-outline-light mt-2"
                       >
                         Show
-                      </button>
-                      
+                      </button>                    
                     </div>
                   {/* <div className="desc">{image.name}</div> */}
                   {/* Modal */}
-                  <div className="modal" id="ventanaModalShared" tabindex="-1" role="dialog" aria-labelledby="tituloVentana" aria-hidden="true"> 
-                          <div className="modal-dialog" role="document">
-                            <div className="modal-content">
-                              <div className="modal-header">
-                                <h5>Share With:</h5>                               
-                              </div>
-
-                              <div className="modal-body">
-                                <div className="input-group">
-                                  <div className="input-group-pretend">
-                                    <span className="input-group-text">@</span>
-                                  </div>
-                                  <input type="text" className="from-control w-75" placeholder="User"></input>
-                                </div>
-                              </div>
-
-                              <div className="modal-footer">
-                              <button className="btn btn-warning" type="button" data-dismiss="modal">
-                                  Close
-                                </button>
-                                <button className="btn btn-success" arial-label="Compartir">
-                                  Share
-                                </button>
-                              </div>
-
-                            </div>
-                          </div>
-                        </div>
+                  <div>
+                    <Modal/>
+                  </div>             
                 </div>
               </div>
             ))}
