@@ -384,24 +384,23 @@ const File = ({
                           <div className="modal-dialog" role="document">
                             <div className="modal-content">
                               <div className="modal-header">
-                                <h5>Compartir con:</h5>
-                                <button className="btn btn-warning" type="button" data-dismiss="modal">
-                                  Cerrar
-                                </button>
+                                <h5>Share With:</h5>                               
                               </div>
-
                               <div className="modal-body">
                                 <div className="input-group">
                                   <div className="input-group-pretend">
                                     <span className="input-group-text">@</span>
                                   </div>
-                                  <input type="text" className="from-control" placeholder="Usuario"></input>
+                                  <input id="input" type="text" className="from-control w-75" placeholder="User">                                              
+                                  </input>                                                  
                                 </div>
                               </div>
-
                               <div className="modal-footer">
-                                <button className="compartir" data-dismiss="modal" arial-label="Compartir">
-                                  Compartir
+                              <button className="btn btn-warning" type="button" data-dismiss="modal">
+                                  Close
+                                </button>
+                                <button className="btn btn-success" arial-label="Compartir">
+                                  Share
                                 </button>
                               </div>
 
