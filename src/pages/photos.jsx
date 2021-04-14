@@ -88,7 +88,6 @@ const Photos = ({ showMessage }) => {
         setExistRequest(false);
       });
   }
-
   function onRemovePhotos(index) {
     const _id = images[index]._id
     setExistRequest(true);
@@ -148,7 +147,6 @@ const Photos = ({ showMessage }) => {
                       <div classNam=" d-flex flex-row align-items-center justify-content-center">
                       <button
                         onClick={() => onRemovePhotos(index)}
-                        // Hacemos un boton para remover la imagen
                         type="button"
                         disabled={existRequest}
                         className="btn btn-danger btn-sm mx-2"
@@ -158,7 +156,6 @@ const Photos = ({ showMessage }) => {
                       <button
                         disabled={existRequest}
                         onClick={() => onDownloadPhotos(index)}
-                        // Hacemos un boton para descargar la imagen
                         type="button"
                         className="btn btn-info btn-sm"
                       >

@@ -1,4 +1,5 @@
 import React from 'react'
+import { getUsuarios } from '../services/fileApiService'
 
 const Modal = () => {
     return(
@@ -30,6 +31,12 @@ const Modal = () => {
                           </div>
                         </div>
     )
+    const listUsuarios = () => {
+      getUsuarios().then((res) => {
+        console.log(res.data);
+      })
+    }
 }
+
 
 export default Modal

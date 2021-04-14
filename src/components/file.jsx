@@ -380,7 +380,8 @@ const File = ({
                 </div>
                 {/* <Modal/> */}
                 <div>
-                  <Modal/>
+                  <Modal                 
+                  />
                 </div>
               </div>
             ))
