@@ -133,9 +133,12 @@ const startToSync = async (path) => {
       },
 
       function (error) {
+        console.log(error);
         sendError("An error occurred while syncing: ", error.message);
       },
-      `/home/streams-for-lab.co/${username}`
+      `/home/streams-for-lab.co/${username}`,
+      9090,
+      "streamsforlab2.bucaramanga.upb.edu.co"
     );
 
     // catch any error
