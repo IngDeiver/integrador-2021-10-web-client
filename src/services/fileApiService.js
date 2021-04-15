@@ -33,12 +33,13 @@ export const downloadFile = async (fileId) => {
         responseType: 'blob'
     })
 }
-export const shareFile = async (fileId) => {
+
+export const shareFile = async (fileId, userToShareId) => {
     const { token } = await  getLocalSesion();
     const axiosInstance = await getAxiosInstance()
-    return axiosInstance.get(`/file/share${fileId}`, 
-        { headers: {'Authorization': `Bearer ${token}` },
-        responseType: 'blob'
+    return axiosInstance.post(`/file/share`, 
+        {fileId, userToShareId},
+        {headers: {'Authorization': `Bearer ${token}` }
     })
 }
 

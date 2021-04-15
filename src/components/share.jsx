@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getUsuarios } from '../services/fileApiService'
 import { Typeahead } from 'react-bootstrap-typeahead';
+import  { shareFile}  from "../services/fileApiService";
 
 
 const Modal = ({file}) => {
@@ -20,6 +21,21 @@ const Modal = ({file}) => {
     listUsuarios()
     console.log(users)
   }, [file])
+
+  const onShare = (file) => {
+    if(file.path.includes("/files/")){
+      shareFile(file._id)
+      .then((res) => {
+        const blob = res.data;
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("share", file.name);
+        link.click();
+        showMessage("File shared!");
+      })
+      .catch((err) => showMessage(err.message, "error"));
+    }}
 
   return (
     <div className="modal" id="ventanaModalShared" tabindex="-1" role="dialog" aria-labelledby="tituloVentana" aria-hidden="true">
@@ -49,7 +65,8 @@ const Modal = ({file}) => {
               Close
                                 </button>
             
-            <button disabled= {singleSelections.length == 0 } className="btn btn-success" arial-label="Compartir">
+            <button disabled= {singleSelections.length == 0 } className="btn btn-success" arial-label="Compartir"
+            onClick={() => onShare(file)}>
               Share
                                 </button>
           </div>

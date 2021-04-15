@@ -24,6 +24,7 @@ const File = ({
   backDirectory,
 }) => {
 
+  const {sharefile,setSharefile} = useState();
   const context = useContext(AppContext);
   const selectingFilesToRemove = context[4];
   const setSelectingFilesToRemove = context[5];
@@ -380,7 +381,7 @@ const File = ({
                 </div>
                 {/* <Modal/> */}
                 <div>
-                  <Modal                 
+                  <Modal file= {file}         
                   />
                 </div>
               </div>
