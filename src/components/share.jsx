@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { getUsuarios } from '../services/fileApiService'
 import { Typeahead } from 'react-bootstrap-typeahead';
-import  { shareFile}  from "../services/fileApiService";
+import { shareFile } from "../services/fileApiService";
+import { sharePhoto } from "../services/photoApiService";
+import { shareVideo } from "../services/videoApiService";
 
 
-const Modal = ({file}) => {
+const Modal = ({ file }) => {
 
   const [users, setUsers] = useState([])
   const [singleSelections, setSingleSelections] = useState([]);
@@ -22,20 +24,29 @@ const Modal = ({file}) => {
     console.log(users)
   }, [file])
 
-  const onShare = (file) => {
-    if(file.path.includes("/files/")){
-      shareFile(file._id)
+  const onShare = (file,user) => {
+    if (file.type == "file") {
+      shareFile(file._id,user.id)
+        .then((res) => {
+          if(res.data)
+          showMessage("File shared!");
+        })
+        .catch((err) => showMessage(err.message, "error"));
+    }else if (file.type == "photo"){
+      sharePhoto(file._id,user.id)
       .then((res) => {
-        const blob = res.data;
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("share", file.name);
-        link.click();
-        showMessage("File shared!");
+        if(res.data)
+        showMessage("Photo shared!");
       })
       .catch((err) => showMessage(err.message, "error"));
-    }}
+    }else {
+      shareVideo(file._id,user.id)
+      .then((res) => {
+        if(res.data)
+        showMessage("Photo shared!");
+      })
+      .catch((err) => showMessage(err.message, "error"));
+  }
 
   return (
     <div className="modal" id="ventanaModalShared" tabindex="-1" role="dialog" aria-labelledby="tituloVentana" aria-hidden="true">
@@ -49,7 +60,7 @@ const Modal = ({file}) => {
               <div className="input-group-pretend mr-1">
                 <span className="input-group-text"><i style={{ fontSize: 20 }} class="fas fa-user-plus"></i></span>
               </div>
-              
+
               <Typeahead
                 id="users-typeahead"
                 labelKey="username"
@@ -64,9 +75,9 @@ const Modal = ({file}) => {
             <button className="btn btn-warning" type="button" data-dismiss="modal">
               Close
                                 </button>
-            
-            <button disabled= {singleSelections.length == 0 } className="btn btn-success" arial-label="Compartir"
-            onClick={() => onShare(file)}>
+
+            <button disabled={singleSelections.length == 0} className="btn btn-success" arial-label="Compartir"
+              onClick={() => onShare(file,singleSelections[0])}>
               Share
                                 </button>
           </div>
