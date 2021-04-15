@@ -3,21 +3,23 @@ import { getUsuarios } from '../services/fileApiService'
 import { Typeahead } from 'react-bootstrap-typeahead';
 
 
-const Modal = () => {
+const Modal = ({file}) => {
 
   const [users, setUsers] = useState([])
-  const [multiSelections, setMultiSelections] = useState([]);
+  const [singleSelections, setSingleSelections] = useState([]);
 
   const listUsuarios = () => {
     getUsuarios().then((res) => {
       const listusers = res.data
+      console.log(listusers)
       setUsers(listusers)
     })
   }
 
   useEffect(() => {
     listUsuarios()
-  }, [])
+    console.log(users)
+  }, [file])
 
   return (
     <div className="modal" id="ventanaModalShared" tabindex="-1" role="dialog" aria-labelledby="tituloVentana" aria-hidden="true">
@@ -31,16 +33,14 @@ const Modal = () => {
               <div className="input-group-pretend mr-1">
                 <span className="input-group-text"><i style={{ fontSize: 20 }} class="fas fa-user-plus"></i></span>
               </div>
-              <input id="input" type="text" className="from-control w-75" placeholder="Write a user...">
-              </input>
+              
               <Typeahead
-                id="users-typeahead-multiple"
-                labelKey="name"
-                multiple
-                onChange={setMultiSelections}
+                id="users-typeahead"
+                labelKey="username"
+                onChange={setSingleSelections}
                 options={users}
                 placeholder="Select users..."
-                selected={multiSelections}
+                selected={singleSelections}
               />
             </div>
           </div>
@@ -48,7 +48,8 @@ const Modal = () => {
             <button className="btn btn-warning" type="button" data-dismiss="modal">
               Close
                                 </button>
-            <button className="btn btn-success" arial-label="Compartir">
+            
+            <button disabled= {singleSelections.length == 0 } className="btn btn-success" arial-label="Compartir">
               Share
                                 </button>
           </div>
