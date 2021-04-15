@@ -1,51 +1,66 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect , useRef} from 'react';
 import { getUsuarios } from '../services/fileApiService'
 import { Typeahead } from 'react-bootstrap-typeahead';
 import { shareFile } from "../services/fileApiService";
 import { sharePhoto } from "../services/photoApiService";
 import { shareVideo } from "../services/videoApiService";
+import WithMessage from "../hocs/withMessage";
 
 
-const Modal = ({ file }) => {
+const Modal = ({ showMessage,file }) => {
 
+  const refContainer = useRef();  
   const [users, setUsers] = useState([])
   const [singleSelections, setSingleSelections] = useState([]);
 
   const listUsuarios = () => {
     getUsuarios().then((res) => {
       const listusers = res.data
-      console.log(listusers)
       setUsers(listusers)
     })
   }
 
+  const resetTypeAhead = () => {
+    setSingleSelections([])
+  }
+
   useEffect(() => {
     listUsuarios()
-    console.log(users)
   }, [file])
 
-  const onShare = (file,user) => {
+  const onShare = (file, user) => {
+   
+    if (!file.shared_users.includes(user._id)){
     if (file.type == "file") {
-      shareFile(file._id,user.id)
+      shareFile(file._id, user._id)
         .then((res) => {
-          if(res.data)
-          showMessage("File shared!");
+          if (res.data){
+            
+            resetTypeAhead()
+            showMessage("File shared!");}
         })
         .catch((err) => showMessage(err.message, "error"));
-    }else if (file.type == "photo"){
-      sharePhoto(file._id,user.id)
-      .then((res) => {
-        if(res.data)
-        showMessage("Photo shared!");
-      })
-      .catch((err) => showMessage(err.message, "error"));
-    }else {
-      shareVideo(file._id,user.id)
-      .then((res) => {
-        if(res.data)
-        showMessage("Photo shared!");
-      })
-      .catch((err) => showMessage(err.message, "error"));
+    } else if (file.type == "photo") {
+      sharePhoto(file._id, user._id)
+        .then((res) => {
+          if (res.data){
+            resetTypeAhead()
+            showMessage("Photo shared!");}
+        })
+        .catch((err) => showMessage(err.message, "error"));
+    } else {
+      shareVideo(file._id, user._id)
+        .then((res) => {
+          if (res.data){
+            
+            resetTypeAhead()
+            showMessage("Video shared!");}
+        })
+        .catch((err) => showMessage(err.message, "error"));
+    }}
+    else{
+      showMessage("User already has file shared", "warning")
+    }
   }
 
   return (
@@ -58,7 +73,7 @@ const Modal = ({ file }) => {
           <div className="modal-body">
             <div className="input-group">
               <div className="input-group-pretend mr-1">
-                <span className="input-group-text"><i style={{ fontSize: 20 }} class="fas fa-user-plus"></i></span>
+                <span className="input-group-text"><i style={{ fontSize: 20 }} className="fas fa-user-plus"></i></span>
               </div>
 
               <Typeahead
@@ -68,16 +83,17 @@ const Modal = ({ file }) => {
                 options={users}
                 placeholder="Select users..."
                 selected={singleSelections}
+                ref = {refContainer}
               />
             </div>
           </div>
           <div className="modal-footer">
-            <button className="btn btn-warning" type="button" data-dismiss="modal">
+            <button className="btn btn-warning" type="button" data-dismiss="modal" onClick={() => refContainer.current.clear()}>
               Close
                                 </button>
 
-            <button disabled={singleSelections.length == 0} className="btn btn-success" arial-label="Compartir"
-              onClick={() => onShare(file,singleSelections[0])}>
+            <button disabled={singleSelections.length == 0} className="btn btn-success" arial-label="Compartir" data-dismiss="modal"
+              onClick={() => onShare(file, singleSelections[0], refContainer.current.clear() )}>
               Share
                                 </button>
           </div>
@@ -90,4 +106,4 @@ const Modal = ({ file }) => {
 }
 
 
-export default Modal
+export default WithMessage(Modal)

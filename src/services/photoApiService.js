@@ -25,7 +25,7 @@ export const downloadPhoto = async (photoId) => {
 export const sharePhoto = async (photoId, userToShareId) => {
     const { token } = await  getLocalSesion();
     const axiosInstance = await getAxiosInstance()
-    return axiosInstance.post(`/file/share`, 
+    return axiosInstance.post(`/photo/share`, 
         {photoId, userToShareId},
         {headers: {'Authorization': `Bearer ${token}` }
     })

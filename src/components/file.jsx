@@ -24,7 +24,7 @@ const File = ({
   backDirectory,
 }) => {
 
-  const {sharefile,setSharefile} = useState();
+  const [currentFile,setCurrentFile] = useState([]);
   const context = useContext(AppContext);
   const selectingFilesToRemove = context[4];
   const setSelectingFilesToRemove = context[5];
@@ -69,55 +69,7 @@ const File = ({
     const upload_at = moment(date).format(format);
     return moment(upload_at, format).fromNow();
   };
-
-
-
-  const onShare = (file) => {
-    if(file.path.includes("/files/")){
-      shareFile(file._id)
-      .then((res) => {
-        const blob = res.data;
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("share", file.name);
-        link.click();
-        showMessage("File shared!");
-      })
-      .catch((err) => showMessage(err.message, "error"));
-    } else if(file.path.includes("/photos/")){
-      sharePhoto(file._id)
-      .then((res) => {
-        const blob = res.data;
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("share", file.name);
-        link.click();
-        showMessage("Photo shared!");
-      })
-      .catch((error) => {
-        showMessage(error.message, "error");
-      });
-    }
-    else {
-      shareVideo(file._id)
-      .then((res) => {
-        const blob = res.data;
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("share", file.name);
-        link.click();
-        showMessage("Video shared!");
-      })
-      .catch((error) => {
-        showMessage(error.message, "error");
-      });
-    }
-   
-  };
-
+ 
 
   const onDownload = (file) => {
     showMessage("Download started")
@@ -192,6 +144,9 @@ const File = ({
     if (filesToRemove.data.length === 0) setSelectingFilesToRemove(false);
   };
 
+  const onShare = (file)=> {
+    setCurrentFile(file)
+  }
 
   return (
     <div className="container-fluid mb-5">
@@ -285,6 +240,7 @@ const File = ({
                         </button>
                         {!isSharedSection && (
                           <button
+                          onClick={() => onShare(file)}
                             className="dropdown-item btn btn-link"
                             data-toggle="modal" data-target="#exampleModal"
                           >
@@ -367,6 +323,7 @@ const File = ({
                           <i className="fas fa-cloud-download-alt"></i> Download
                           </button>
                           <button
+                            onClick={() => onShare(dir.file)}
                             className="dropdown-item btn btn-link"
                             data-toggle="modal" data-target="#ventanaModalShared"
                           >
@@ -381,7 +338,7 @@ const File = ({
                 </div>
                 {/* <Modal/> */}
                 <div>
-                  <Modal file= {file}         
+                  <Modal file= {currentFile}
                   />
                 </div>
               </div>
