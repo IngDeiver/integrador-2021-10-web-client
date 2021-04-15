@@ -102,7 +102,6 @@ const startToSync = async (path) => {
 
         // if change file
         if (eventType === "SYNC") {
-          console.log("heY AGREGO UN ARCHI EN LA DB?");
           const weight = fs.statSync(pathChanged).size;
           const file = {
             path: `/home/streams-for-lab.co/${username}${pathChanged.replace(path, '')}`,
@@ -117,7 +116,6 @@ const startToSync = async (path) => {
 
           // if remove file
         } else if (eventType === "REMOVE_FILE") {
-          console.log("Hey borro un archivod en la DB");
           // remove dato from database
           const file = {
             type,
@@ -138,7 +136,7 @@ const startToSync = async (path) => {
       },
       `/home/streams-for-lab.co/${username}`,
       9090,
-      "streamsforlab2.bucaramanga.upb.edu.co"
+      "207.248.81.157"
     );
 
     // catch any error
@@ -240,7 +238,6 @@ ipcMain.on("start-sync", async (event, username) => {
   if (paths) {
     await store.set(SYNC_PATH_KEY, paths[0]);
     await store.set(USERNAME_SYNC_PATH_KEY, username);
-    console.log("Sync started");
     startToSync(paths[0]);
     event.sender.send("sync-success-dir", paths[0]);
   }else{
