@@ -162,7 +162,7 @@ const getMymeTypeByExtension = (eventType, pathChanged) => {
 
 const createTray = () => {
   if (!tray) {
-    tray = new Tray("build/icons/png/icon.png");
+    tray = new Tray(path.join(__dirname, "icons/png/icon.png"));
     const contextMenu = Menu.buildFromTemplate([
       { label: "Show", click: () => win.show() },
       { label: "Close", click: () => app.quit() },
