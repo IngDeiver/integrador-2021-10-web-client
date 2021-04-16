@@ -16,12 +16,13 @@ import Modal from "../components/share";
 
 const Photos = ({ showMessage }) => {
   const [currentImage, setCurrentImage] = useState({});
-
+  
   // This array should sorted! default by date!
   const [currentImageToShare, setCurrentImageToShare] = useState([]);
   const [images, setImages] = useState([]);
   const [existRequest, setExistRequest] = useState(false);
   const context = useContext(AppContext);
+  const user = context[3];
   const reloadFiles = context[8];
   const setReloadFiles = context[9];
   const [loadingPhotos, setLoadingPhotos] = useState(true);
@@ -162,19 +163,25 @@ const Photos = ({ showMessage }) => {
                       >
                         Download
                       </button>
-                      <button
-                      onClick = {() => {
-                        setCurrentImageToShare(image)
+                      {
+                        
+                        image.author.username.replace(/\s/g, "-").toLowerCase() == user.username
+                        && <button
+                        onClick = {() => {
+                          setCurrentImageToShare(image)
+                          console.log(image)
+                        }                     
+                        }
+                        
+                          disabled={existRequest}
+                          type="button"
+                          className="btn btn-success btn-sm ml-2"
+                          data-toggle="modal" 
+                          data-target="#ventanaModalShared"
+                        >
+                          Share
+                        </button>
                       }
-                      }
-                        disabled={existRequest}
-                        type="button"
-                        className="btn btn-success btn-sm ml-2"
-                        data-toggle="modal" 
-                        data-target="#ventanaModalShared"
-                      >
-                        Share
-                      </button>
                       </div>
                       <button
                       onClick={() => {

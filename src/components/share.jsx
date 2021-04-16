@@ -88,7 +88,12 @@ const Modal = ({ showMessage,file }) => {
             </div>
           </div>
           <div className="modal-footer">
-            <button className="btn btn-warning" type="button" data-dismiss="modal" onClick={() => refContainer.current.clear()}>
+            <button className="btn btn-warning" type="button" data-dismiss="modal" onClick={
+              () => {
+                refContainer.current.clear()
+                setSingleSelections([])
+              }
+              }>
               Close
                                 </button>
 
