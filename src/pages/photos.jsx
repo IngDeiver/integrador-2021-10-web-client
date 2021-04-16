@@ -18,6 +18,7 @@ const Photos = ({ showMessage }) => {
   const [currentImage, setCurrentImage] = useState({});
 
   // This array should sorted! default by date!
+  const [currentImageToShare, setCurrentImageToShare] = useState([]);
   const [images, setImages] = useState([]);
   const [existRequest, setExistRequest] = useState(false);
   const context = useContext(AppContext);
@@ -162,6 +163,10 @@ const Photos = ({ showMessage }) => {
                         Download
                       </button>
                       <button
+                      onClick = {() => {
+                        setCurrentImageToShare(image)
+                      }
+                      }
                         disabled={existRequest}
                         type="button"
                         className="btn btn-success btn-sm ml-2"
@@ -186,7 +191,8 @@ const Photos = ({ showMessage }) => {
                   {/* <div className="desc">{image.name}</div> */}
                   {/* Modal */}
                   <div>
-                    <Modal/>
+                    <Modal file = {currentImageToShare}
+                    />
                   </div>             
                 </div>
               </div>
