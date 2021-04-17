@@ -12,14 +12,17 @@ import {
 import { AppContext } from "../context/AppProvider";
 import Spinner from "../components/spinner";
 import { onSort } from "../util/sort";
+import Modal from "../components/share";
 
 const Photos = ({ showMessage }) => {
   const [currentImage, setCurrentImage] = useState({});
-
+  
   // This array should sorted! default by date!
+  const [currentImageToShare, setCurrentImageToShare] = useState([]);
   const [images, setImages] = useState([]);
   const [existRequest, setExistRequest] = useState(false);
   const context = useContext(AppContext);
+  const user = context[3];
   const reloadFiles = context[8];
   const setReloadFiles = context[9];
   const [loadingPhotos, setLoadingPhotos] = useState(true);
@@ -87,7 +90,6 @@ const Photos = ({ showMessage }) => {
         setExistRequest(false);
       });
   }
-
   function onRemovePhotos(index) {
     const _id = images[index]._id
     setExistRequest(true);
@@ -147,7 +149,6 @@ const Photos = ({ showMessage }) => {
                       <div classNam=" d-flex flex-row align-items-center justify-content-center">
                       <button
                         onClick={() => onRemovePhotos(index)}
-                        // Hacemos un boton para remover la imagen
                         type="button"
                         disabled={existRequest}
                         className="btn btn-danger btn-sm mx-2"
@@ -157,19 +158,30 @@ const Photos = ({ showMessage }) => {
                       <button
                         disabled={existRequest}
                         onClick={() => onDownloadPhotos(index)}
-                        // Hacemos un boton para descargar la imagen
                         type="button"
                         className="btn btn-info btn-sm"
                       >
                         Download
                       </button>
-                      <button
-                        disabled={existRequest}
-                        type="button"
-                        className="btn btn-success btn-sm ml-2"
-                      >
-                        Share
-                      </button>
+                      {
+                        
+                        image.author.username.replace(/\s/g, "-").toLowerCase() == user.username
+                        && <button
+                        onClick = {() => {
+                          setCurrentImageToShare(image)
+                          console.log(image)
+                        }                     
+                        }
+                        
+                          disabled={existRequest}
+                          type="button"
+                          className="btn btn-success btn-sm ml-2"
+                          data-toggle="modal" 
+                          data-target="#ventanaModalShared"
+                        >
+                          Share
+                        </button>
+                      }
                       </div>
                       <button
                       onClick={() => {
@@ -181,10 +193,14 @@ const Photos = ({ showMessage }) => {
                         className="btn btn-outline-light mt-2"
                       >
                         Show
-                      </button>
-                      
+                      </button>                    
                     </div>
                   {/* <div className="desc">{image.name}</div> */}
+                  {/* Modal */}
+                  <div>
+                    <Modal file = {currentImageToShare}
+                    />
+                  </div>             
                 </div>
               </div>
             ))}

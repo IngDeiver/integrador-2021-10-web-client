@@ -8,7 +8,7 @@ export const AppProvider = ({children}) => {
     const [sesion, setSesion] = useState(null) // The sesion (jwt or azure-ad)
     const [user, setUser] = useState(null) // The user authenticated
     const [selectingFilesToRemove, setSelectingFilesToRemove] = useState(false)
-    const [filesToRemove, setFilesToRemove] = useState({areVideos:false, data:[]})
+    const [filesToRemove, setFilesToRemove] = useState({type:'', data:[]})
     const [reloadFiles, setReloadFiles] = useState(false)
     
 

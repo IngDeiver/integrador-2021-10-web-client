@@ -24,12 +24,13 @@ export const downloadVideo = async (videoId) => {
         responseType: 'blob'
     })
 }
-export const shareVideo = async (videoId) => {
+
+export const shareVideo = async (videoId, userToShareId) => {
     const { token } = await  getLocalSesion();
     const axiosInstance = await getAxiosInstance()
-    return axiosInstance.get(`/video/share/${videoId}`, 
-        { headers: {'Authorization': `Bearer ${token}` },
-        responseType: 'blob'
+    return axiosInstance.post(`/video/share`, 
+        {videoId, userToShareId},
+        {headers: {'Authorization': `Bearer ${token}` }
     })
 }
 
