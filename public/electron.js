@@ -236,10 +236,10 @@ ipcMain.on("start-sync", async (event, username) => {
   });
 
   if (paths) {
-    await store.set(SYNC_PATH_KEY, paths[0]);
+    await store.set(SYNC_PATH_KEY, paths[0].replace(/\\/g, '/'));
     await store.set(USERNAME_SYNC_PATH_KEY, username);
-    startToSync(paths[0]);
-    event.sender.send("sync-success-dir", paths[0]);
+    startToSync(paths[0].replace(/\\/g, '/'));
+    event.sender.send("sync-success-dir", paths[0].replace(/\\/g, '/'));
   }else{
     event.sender.send("sync-success-dir", paths);
   }
