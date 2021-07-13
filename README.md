@@ -5,7 +5,7 @@
   </a>
 </p>
 
-Streams for lab es un proyecto integrador de la facultad de ing. de ssitemas, propuesto por la facultad para desarrollar durante el semestre, e cual consta de lo siguiente:
+Streams for lab es un proyecto integrador de la facultad de ing. de sitemas, propuesto por la facultad para desarrollar durante el semestre, el cual consta de lo siguiente:
 Como iniciativa en la solución al manejo de recursos compartidos en pequeñas empresas o el hogar se propone desarrollar un sistema distribuido de administración de recursos compartidos como se muestra en la Figura 1. Entre ellos archivos, fotos y video desde una interfaz unificada. Se propone que el sistema permita sincronizar datos de celular o directorios de un equipo de escritorio, en una copia de seguridad. También ofrezca la capacidad de compartir archivos. Si los archivos son imágenes o video el sistema ofrecería la capacidad de organizar y presentar las imágenes. Por ejemplo, la aplicación “Fotos” de Google. Además, el sistema tendría un servidor streaming para compartir y reproducir video.
 
 [CFC (algorithm of sync)](https://github.com/oneCiser/Sync-Files-Cipher)
@@ -14,6 +14,16 @@ Como iniciativa en la solución al manejo de recursos compartidos en pequeñas e
 ![Part 1](https://firebasestorage.googleapis.com/v0/b/ingdeiver.appspot.com/o/portafolio%2Fimagenes%2FStreams%20form%20lab%20arc-1.jpg?alt=media&token=3a5867fb-e12e-44e9-a319-68c2681a9f7b "Part 1")
 
 ![Part 2](https://firebasestorage.googleapis.com/v0/b/ingdeiver.appspot.com/o/portafolio%2Fimagenes%2FStreams%20form%20lab%20arc-2.jpg?alt=media&token=6832e358-4d9e-44cd-82d4-6aa7a8d77d10 "Part 2")
+
+# List of repositories 
+- [Gateway service](https://github.com/IngDeiver/streams-for-labs-gateway-service)
+- [Video service](https://github.com/IngDeiver/streams-for-labs-video-service)
+- [Photo service](https://github.com/IngDeiver/streams-for-labs-photo-service)
+- [File service](https://github.com/IngDeiver/streams-for-labs-file-service)
+- [Sync service](https://github.com/IngDeiver/streams-for-labs-sync-service)
+- [Web client](https://github.com/IngDeiver/streams-for-labs-web-client)
+- [Admin service](https://github.com/IngDeiver/streams-for-labs-admin-service)
+
 
 # Secciones de la aplicación web
 ## Login
