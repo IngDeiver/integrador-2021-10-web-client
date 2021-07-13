@@ -8,6 +8,13 @@
 Streams for lab es un proyecto integrador de la facultad de ing. de ssitemas, propuesto por la facultad para desarrollar durante el semestre, e cual consta de lo siguiente:
 Como iniciativa en la solución al manejo de recursos compartidos en pequeñas empresas o el hogar se propone desarrollar un sistema distribuido de administración de recursos compartidos como se muestra en la Figura 1. Entre ellos archivos, fotos y video desde una interfaz unificada. Se propone que el sistema permita sincronizar datos de celular o directorios de un equipo de escritorio, en una copia de seguridad. También ofrezca la capacidad de compartir archivos. Si los archivos son imágenes o video el sistema ofrecería la capacidad de organizar y presentar las imágenes. Por ejemplo, la aplicación “Fotos” de Google. Además, el sistema tendría un servidor streaming para compartir y reproducir video.
 
+[CFC (algorithm of sync)](https://github.com/oneCiser/Sync-Files-Cipher)
+
+# Arquitecture 
+![Part 1](https://firebasestorage.googleapis.com/v0/b/ingdeiver.appspot.com/o/portafolio%2Fimagenes%2FStreams%20form%20lab%20arc-1.jpg?alt=media&token=3a5867fb-e12e-44e9-a319-68c2681a9f7b "Part 1")
+
+![Part 2](https://firebasestorage.googleapis.com/v0/b/ingdeiver.appspot.com/o/portafolio%2Fimagenes%2FStreams%20form%20lab%20arc-2.jpg?alt=media&token=6832e358-4d9e-44cd-82d4-6aa7a8d77d10 "Part 2")
+
 # Secciones de la aplicación web
 ## Login
 ![Admin Login](https://firebasestorage.googleapis.com/v0/b/files-service.appspot.com/o/images%2FLogin%20admin.png?alt=media&token=06f93f06-91c6-4171-84f2-fcbfcbcaa3e1)
